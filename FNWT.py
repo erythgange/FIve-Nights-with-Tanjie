@@ -6,44 +6,62 @@ import sys
 pygame.init()
 WIDTH, HEIGHT = 1920, 1080
 FPS = 60 
-ENEMY_SPAWN_RATE = 30  # Lower is faster
+ENEMY_SPAWN_RATE = 100  # Lower is faster
 ENEMY_HIT_RADIUS = 50
 
-# Colors
+# colors
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
-# Set up the displays
+# displays
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Five Nights with Tanjie")
 
 # assets
 font = pygame.font.Font(None, 36)
-CATimg = pygame.image.load('FNWT/Assets/TanjieSprites.png').convert_alpha()
-CAT = pygame.transform.scale(CATimg, (250,250))
+Tidle = pygame.image.load('FNWT/Assets/Tidle.png').convert_alpha()
 BG = pygame.image.load('FNWT/Assets/BG.png').convert()
-RAT = pygame.image.load('FNWT/Assets/RAT.png').convert_alpha()
+RAT = pygame.image.load('FNWT/Assets/Ridle.png').convert_alpha()
 
-# Enemy class
+
+
+
+
+
+
+
+
+
+
+
+# class enemy
 class Enemy:
     def __init__(self):
         self.x = random.choice([0, WIDTH])
-        self.y = 600
+        self.y = 550
         self.direction = 1 if self.x == 0 else -1
-        self.speed = 30
+        self.speed = 10
 
     def move(self): self.x += self.speed * self.direction
-    def draw(self): pygame.draw.circle(screen, RED, (self.x, self.y), 20)
+    def draw(self): 
+        center = (self.x - (RAT.get_width()/2), self.y - (RAT.get_height()/2))
+        if self.direction == -1: screen.blit(pygame.transform.flip(RAT, True, False), center)
+        else: screen.blit(RAT, center)
+        
+        pygame.draw.circle(screen, RED, (self.x, self.y), 5) # debug circle
+        
     def is_hit(self, pos): return (pos[0] - self.x) ** 2 + (pos[1] - self.y) ** 2 < ENEMY_HIT_RADIUS ** 2
 
-# player
+# class player
 class Player:
     def __init__(self):
         self.x = WIDTH / 2
-        self.y = 500
+        self.y = 550
+    
+
         self.can_attack = True
-        self.looking_left = True
+        self.looking_left = True 
 
     def move(self, direction:str):
         if direction == "left": 
@@ -53,15 +71,25 @@ class Player:
             self.x = self.x + 200
             self.looking_left = False
 
-    def draw(self): 
-        if self.looking_left == True:
-            screen.blit(CAT, (self.x,self.y))
-        else: screen.blit(pygame.transform.flip(CAT, True, False), (self.x,self.y))
+    def draw(self):
+        center = (self.x - (Tidle.get_width()/2), self.y - (Tidle.get_height()/2))
+        if self.looking_left == True: screen.blit(CAT, center)
+        else: screen.blit(pygame.transform.flip(CAT, True, False), center)
+        pygame.draw.circle(screen, RED, (self.x, self.y), 5) # debug circle
 
     def is_hit(self): pass
 
 
-# Main game loop
+
+
+
+
+
+
+
+
+
+# main
 def main():
     clock = pygame.time.Clock()
     tanjie = Player()
@@ -112,5 +140,4 @@ def main():
         clock.tick(FPS)
 
 # start game
-if __name__ == "__main__":
-    main()
+main()
