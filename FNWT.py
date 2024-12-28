@@ -60,40 +60,50 @@ constant_y = 600
 
 # class enemy
 class Enemy:
-    def __init__(self,tanjie_x):
-        self.x = (random.choice([1000,-1000])) + 500 + tanjie_x
-        #self.x = 0.00 + 500
-        print(f"spawned enemy with self.x of: {round(self.x,1)}")
+    def __init__(self,tanjie):
+        self.x = (random.choice([1000,-1000])) + 500 + tanjie.x
+        self.speed = 6 + random.randint(-5,5)
         #if spawned from tanjie's left:(self.x < tanjie_x), go right. vice versa
-        if self.x < tanjie_x: self.direction = 1  
+        if self.x < tanjie.x: self.direction = 1  
         else: self.direction = -1
-        self.speed = 5
+        self.collision_rect = pygame.Rect(0,0,100,25)
+        
 
     def move(self): self.x += self.speed * self.direction
-    def draw(self,tanjie_x): 
+    def draw(self,tanjie): 
         
-        finalx = (self.x - (tanjie_x)) + (Ridle.get_width()/2)
-        #finalx = (self.x - (tanjie_x)) + (Ridle.get_width()/2) + 500
+        finalx = (self.x - (tanjie.x))
         finaly = constant_y - (Ridle.get_height()/2)
         
         center = (finalx, finaly)
         if self.direction == -1: screen.blit(pygame.transform.flip(Ridle, True, False), center)
-        else: screen.blit(Ridle, center)
-        
+        else: screen.blit(Ridle, center)        
         pygame.draw.circle(screen, RED, (finalx + Ridle.get_width()/2, constant_y), 5) # debug circle
         
+        # collisions
+        self.collision_rect.center = (finalx+ 250, constant_y+100)
+        if self.collision_rect.colliderect(tanjie.collision_rect):
+            color = GREEN
+        #    tanjie.collide(self.x)
+            print("hit")
+        else: color = RED    
+        
+        pygame.draw.rect(screen, color, self.collision_rect)
+        
+
+
     def is_hit(self, pos): return (pos[0] - self.x) ** 2 + (pos[1] - constant_y) ** 2 < ENEMY_HIT_RADIUS ** 2
+
 
 # class player
 class Player:
     def __init__(self):
         
         # experiment variables (can change)
-        self.framepause : int = 8 # how fast (ms) Tanjie moves every frame
+        self.framepause : int = 7 # how fast (ms) Tanjie moves every frame
         self.inactive : int = 1000 # how much time (ms) Tanjie returns to idle pose after moving
         self.speed : float = 30
 
-        
         # constant variables (dont change)
         self.x : int = 0
         self.velocity : float = 0
@@ -102,14 +112,17 @@ class Player:
         self.time_last_move : int = 0
         self.actions = [Tidle]
         self.frameduration = self.framepause
+        self.collision_rect = pygame.Rect(0,0,100,25)
+        self.collision_color = GREEN
 
     def move(self, direction:str, keydown:bool = True):
         
         def attacklong():
                 self.actions.append(Tcrouch_attacklong)
+                self.actions.append(Tcrouch_attacklong)
                 self.actions.append(Tattacklong_crouch)
                 self.actions.append(Tcrouch)
-
+                
         if keydown == True and self.can_attack == True:
             self.can_attack = False # no spamming attack
 
@@ -131,6 +144,15 @@ class Player:
 
             # hitstop: pygame.time.delay(1000) # hitstop
     
+    def collide(self, position): 
+        if self.actions[0] == Tcrouch_attacklong: #if jumping
+            self.actions.pop(0)
+            self.can_attack = True
+            self.x = (position - self.x) * 0.9
+            self.velocity = 0
+            self.actions.append(Tattacklong_crouch)
+            self.actions.append(Tcrouch)
+
     def draw(self):        
 
         # animation frame rate / edit it with self.framepause
@@ -144,19 +166,33 @@ class Player:
                 # if tanjie does an action that turns him around
                 if self.actions[0] in mirror_frames: self.looking_left = not self.looking_left
                 self.time_last_move = pygame.time.get_ticks() # timer after this move
-        
-            if self.actions[0] == Tcrouch_attacklong: # if jumping attack
-                if self.looking_left == False: self.velocity = self.speed # going right
+
+            # if crouching (vulnerable)
+            if self.actions[0] == (Tidle_crouch or Tidle_crouchM):
+                self.collision_rect = pygame.Rect(0,0,25,25)
+
+            # if jumping attack
+            elif self.actions[0] == Tcrouch_attacklong: 
+                if self.looking_left == False: self.velocity = self.speed # going right    
                 else: self.velocity = -self.speed # going left
-            if self.actions[0] == Tcrouch_attackshort:
+                self.collision_rect = pygame.Rect(0,0,150,25)
+
+            elif self.actions[0] == Tcrouch_attackshort:
                 pass
 
-        else: self.can_attack = True # if there is no appended action, tanjie can now attack
+        else: 
+            self.can_attack = True # if there is no appended action, tanjie can now attack
+            self.collision_rect = pygame.Rect(0,0,25,25)
 
         # velocity formulas
         self.x += self.velocity
         self.velocity *= 0.9
 
+        # collisions
+        self.collision_rect.center = (960, constant_y+100)
+        pygame.draw.rect(screen, self.collision_color, self.collision_rect)
+        
+        # idle animation
         elapsed_time = ((pygame.time.get_ticks() - self.time_last_move)) # timer start after last move
         if (self.actions[0] == Tcrouch) and (elapsed_time > self.inactive): # if tanjie is crouching, and timer is up, 
             self.actions[0] = (Tcrouch_idle) # transition back to idle animation
@@ -176,6 +212,7 @@ def main():
     clock = pygame.time.Clock()
     tanjie = Player()
     enemies = [] #must be enemy class
+    killed_enemies = []
     score = 0
     spawn_counter = 0
 
@@ -193,14 +230,10 @@ def main():
         # enemies
         spawn_counter += 1
         if spawn_counter >= ENEMY_SPAWN_RATE:
-            enemies.append(Enemy(tanjie.x))
+            enemies.append(Enemy(tanjie))
             spawn_counter = 0
         for enemy in enemies:
             enemy.move()
-
-        # Remove off-screen enemies
-        #enemies = [enemy for enemy in enemies if 0 < enemy.x < WIDTH]
-
 
         # drawing
         def cam_offset(inputpos, parralax=1):
@@ -212,8 +245,19 @@ def main():
         screen.fill(WHITE)
         screen.blit(BG, (bglocation, 1))
         tanjie.draw()
-        for enemy in enemies: enemy.draw(tanjie.x)
+        for enemy in enemies: enemy.draw(tanjie)
         
+        # collisions
+        for enemy in enemies:
+            if tanjie.collision_rect.colliderect(enemy.collision_rect):
+                enemies.remove(enemy)
+                tanjie.collision_color = GREEN
+            else: tanjie.collision_color = WHITE
+
+
+
+
+
 
         # debugging
         score_text = font.render(f'Score: {score}', True, GREEN)

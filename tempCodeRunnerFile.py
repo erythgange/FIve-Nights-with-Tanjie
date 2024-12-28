@@ -1,1 +1,1 @@
-(tanjie_x*2)
++ Ridle.get_width()/2
