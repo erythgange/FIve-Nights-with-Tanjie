@@ -1,7 +1,7 @@
 import pygame
 import random
 import sys
-
+from pygame import mixer
 # constants
 pygame.init()
 WIDTH, HEIGHT = 1920, 1080
@@ -22,38 +22,40 @@ pygame.display.set_caption("Five Nights with Tanjie")
 # assets
 font = pygame.font.Font(None, 36)
 # Tanjie idle/crouch
-Tidle = pygame.image.load('FNWT/Assets/Tidle.png').convert_alpha()
-Tcrouch = pygame.image.load('FNWT/Assets/Tcrouch.png').convert_alpha()
-Tidle_crouch = pygame.image.load('FNWT/Assets/Tidle-crouch.png').convert_alpha()
-Tidle_crouchM = pygame.image.load('FNWT/Assets/Tidle-crouchM.png').convert_alpha()
-Tcrouch_idle = pygame.image.load('FNWT/Assets/Tcrouch-idle.png').convert_alpha()
-Tcrouch = pygame.image.load('FNWT/Assets/Tcrouch.png').convert_alpha()
-Tcrouch_switch = pygame.image.load('FNWT/Assets/Tcrouch-switch.png').convert_alpha()
+Tidle = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tidle.png').convert_alpha()
+Tcrouch = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch.png').convert_alpha()
+Tidle_crouch = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tidle-crouch.png').convert_alpha()
+Tidle_crouchM = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tidle-crouchM.png').convert_alpha()
+Tcrouch_idle = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch-idle.png').convert_alpha()
+Tcrouch = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch.png').convert_alpha()
+Tcrouch_switch = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch-switch.png').convert_alpha()
 # Tanjie attack
-Tcrouch_attacklong = pygame.image.load('FNWT/Assets/Tcrouch-attacklong.png').convert_alpha()
-Tcrouch_attackshort = pygame.image.load('FNWT/Assets/Tcrouch-attackshort.png').convert_alpha()
-Tattacklong_crouch = pygame.image.load('FNWT/Assets/Tattacklong-crouch.png').convert_alpha()
+Tcrouch_attacklong = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch-attacklong.png').convert_alpha()
+Tcrouch_attackshort = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch-attackshort.png').convert_alpha()
+Tattacklong_crouch = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-crouch.png').convert_alpha()
 # Tanjie miss
-Tattacklong_miss1 = pygame.image.load('FNWT/Assets/Tattacklong-miss1.png').convert_alpha()
-Tattacklong_miss2 = pygame.image.load('FNWT/Assets/Tattacklong-miss2.png').convert_alpha()
-Tattacklong_miss3 = pygame.image.load('FNWT/Assets/Tattacklong-miss3.png').convert_alpha()
-Tattacklong_miss4 = pygame.image.load('FNWT/Assets/Tattacklong-miss4.png').convert_alpha()
-Tmiss_crouchM = pygame.image.load('FNWT/Assets/Tmiss-crouchM.png').convert_alpha()
+Tattacklong_miss1 = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-miss1.png').convert_alpha()
+Tattacklong_miss2 = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-miss2.png').convert_alpha()
+Tattacklong_miss3 = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-miss3.png').convert_alpha()
+Tattacklong_miss4 = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-miss4.png').convert_alpha()
+Tmiss_crouchM = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tmiss-crouchM.png').convert_alpha()
 # Tanjie hit/hurt
-Thit1 = pygame.image.load('FNWT/Assets/Thit1.png').convert_alpha()
-Thit2 = pygame.image.load('FNWT/Assets/Thit2.png').convert_alpha()
-Thit2_crouchM = pygame.image.load('FNWT/Assets/Thit2-crouchM.png').convert_alpha()
-Thit2_attacklong = pygame.image.load('FNWT/Assets/Thit2-attacklong.png').convert_alpha()
-Thit2_attacklongM = pygame.image.load('FNWT/Assets/Thit2-attacklongM.png').convert_alpha()
-Thurt = pygame.image.load('FNWT/Assets/Thurt.png').convert_alpha()
+Thit1 = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Thit1.png').convert_alpha()
+Thit2 = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Thit2.png').convert_alpha()
+Thit2_crouchM = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Thit2-crouchM.png').convert_alpha()
+Thit2_attacklong = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Thit2-attacklong.png').convert_alpha()
+Thit2_attacklongM = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Thit2-attacklongM.png').convert_alpha()
+Thurt = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Thurt.png').convert_alpha()
 # Tanjie mirror frames
 mirror_frames = [Tidle_crouchM, Tmiss_crouchM, Tcrouch_switch, Thit2_crouchM, Thit2_attacklongM, Tattacklong_crouch, Tattacklong_miss1]
 # BG
-Light = pygame.image.load('FNWT/Assets/Light.png').convert_alpha()
-BG = pygame.image.load('FNWT/Assets/BG.png').convert()
-Ridle = pygame.image.load('FNWT/Assets/Ridle.png').convert_alpha()
+Light = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Light.png').convert_alpha()
+BG = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/BG.png').convert()
+Ridle = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Ridle.png').convert_alpha()
 
-
+# BG music
+mixer.music.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/BGX.mp3')
+mixer.music.play(-1)
 
 # constants
 constant_y = 600
