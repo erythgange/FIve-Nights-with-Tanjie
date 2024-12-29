@@ -1,1 +1,1 @@
-+ Ridle.get_width()/2
+Thit
