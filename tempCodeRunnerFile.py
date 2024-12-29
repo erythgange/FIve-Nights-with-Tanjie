@@ -1,1 +1,1 @@
-Tmiss_crouchM
+pygame.time.delay(1000)
