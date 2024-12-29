@@ -47,7 +47,7 @@ Thit2_attacklong = pygame.image.load('FNWT/Assets/Thit2-attacklong.png').convert
 Thit2_attacklongM = pygame.image.load('FNWT/Assets/Thit2-attacklongM.png').convert_alpha()
 Thurt = pygame.image.load('FNWT/Assets/Thurt.png').convert_alpha()
 # Tanjie mirror frames
-mirror_frames = [Tidle_crouchM, Tmiss_crouchM, Tcrouch_switch, Thit2_crouchM, Thit2_attacklongM]
+mirror_frames = [Tidle_crouchM, Tmiss_crouchM, Tcrouch_switch, Thit2_crouchM, Thit2_attacklongM, Tattacklong_crouch, Tattacklong_miss1]
 # BG
 Light = pygame.image.load('FNWT/Assets/Light.png').convert_alpha()
 BG = pygame.image.load('FNWT/Assets/BG.png').convert()
@@ -67,7 +67,7 @@ constant_y = 600
 class Enemy:
     def __init__(self,tanjie):
         self.x = (random.choice([1000,-1000])) + 700 + tanjie.x
-        self.speed = 10 + random.randint(-5,5)
+        self.speed = 10# + random.randint(-1,1)
         #if spawned from tanjie's left:(self.x < tanjie_x), go right. vice versa
         if self.x < tanjie.x: self.direction = 1  
         else: self.direction = -1
@@ -105,14 +105,15 @@ class Player:
     def __init__(self):
         
         # experiment variables (can change)
-        self.framepause : int = 8 # how fast (ms) Tanjie moves every frame
+        self.framepause : int = 6 # how fast (ms) Tanjie moves every frame
         self.inactive : int = 2000 # how much time (ms) Tanjie returns to idle pose after moving
-        self.speed : float = 30
+        self.speed : float = 40
 
         # constant variables (dont change)
         self.x : int = 0
         self.y : int = 0
-        self.velocity : float = 0
+        self.velocity_x : float = 0
+        self.velocity_y : float = 0
         self.can_attack : bool = True
         self.looking_left : bool = True
         self.time_last_move : int = 0
@@ -120,43 +121,43 @@ class Player:
         self.frameduration = self.framepause
         self.collision_rect = pygame.Rect(0,0,100,25)
         self.collision_color = GREEN
+        self.freejump : int = 1
 
     def move(self, direction:str, keydown:bool = True):
         
         def attacklong():
                 self.actions.append(Tcrouch_attacklong)
                 self.actions.append(Tcrouch_attacklong)
-                self.actions.append(Tcrouch_attacklong)
                 self.actions.append(Tattacklong_crouch)
-                self.actions.append(Tattacklong_miss1)
-                self.actions.append(Tattacklong_miss2)
-                self.actions.append(Tattacklong_miss2)
-                self.actions.append(Tattacklong_miss3)
-                self.actions.append(Tattacklong_miss3)
-                self.actions.append(Tattacklong_miss3)
-                self.actions.append(Tattacklong_miss4)
-                self.actions.append(Tattacklong_miss4)
-                self.actions.append(Tattacklong_miss4)
-                self.actions.append(Tattacklong_miss4)
-                self.actions.append(Tmiss_crouchM)
-                self.actions.append(Tcrouch)
+                if self.freejump > 0: 
+                    self.freejump -= 1
+                    self.actions.append(Tcrouch)
+                else:
+                    self.actions.append(Tattacklong_miss1)
+                    self.actions.append(Tattacklong_miss2)
+                    self.actions.append(Tattacklong_miss3)
+                    self.actions.append(Tattacklong_miss4)
+                    self.actions.append(Tmiss_crouchM)
+                    self.actions.append(Tcrouch)
                 
         if keydown == True and self.can_attack == True:
             self.can_attack = False # no spamming attack
 
-            if self.actions[0] == Thit2:
-                self.actions.clear()
-                
+            #from a successful hit,
+            if self.actions[0] == Thit2 or self.actions[0] == Thit1:
+                self.freejump : int = 1
+                preserve = self.actions[0]
+                self.actions.clear() # clear everything except first
+                self.actions.insert(0, preserve)
+                #same direction
                 if (direction == "left" and self.looking_left == True) or (direction == "right" and self.looking_left == False): 
-                    self.actions.append(Thit2_attacklong) # no mirror
-                    self.actions.append(Thit2_attacklong) # no mirror
+                    if self.actions[0] == Thit2: self.actions.append(Thit2_attacklong)
+                #opposite direction
                 if (direction == "right" and self.looking_left == True) or (direction == "left" and self.looking_left == False): 
-                    self.looking_left = not self.looking_left
-                    self.actions.append(Thit2_attacklongM) # when mirror
-                    
-                #self.actions.append(Tcrouch)
+                    if self.actions[0] == Thit2: self.actions.append(Thit2_attacklongM)
+                    else: self.looking_left = not self.looking_left
+                
                 attacklong()
-                print(f"direction: {direction} while looking left: {self.looking_left}")
 
             # from idle
             if self.actions[0] == (Tidle):
@@ -177,11 +178,10 @@ class Player:
     
     def collide(self, target_pos): 
         if self.actions[0] == (Tcrouch_attacklong): #if jumping
-            self.can_attack = True
             self.actions.clear()
             self.actions.append(Thit1)
-            self.actions.append(Thit2)
-            self.actions.append(Thit2)
+            self.actions.append(Thit1)
+            self.actions.append(Thit1)
             self.actions.append(Thit2)
             self.actions.append(Thit2)
             self.actions.append(Thit2_crouchM)
@@ -207,26 +207,34 @@ class Player:
                 if self.actions[0] in mirror_frames: self.looking_left = not self.looking_left
                 self.time_last_move = pygame.time.get_ticks() # timer after this move
 
-
-                
-
                 # if crouching (vulnerable)
                 if self.actions[0] == (Tidle_crouch or Tidle_crouchM):
                     self.collision_rect = pygame.Rect(0,0,25,25)
-
-                #recovery
+                # attack recovery
                 if self.actions[0] == Thit2_crouchM:
-                    if self.looking_left == False: self.velocity = (self.speed/2) # going right    
-                    else: self.velocity = -(self.speed/2) # going left
-                #recovery
+                    if self.looking_left == False: self.velocity_x = -(self.speed) # going right    
+                    else: self.velocity_x = (self.speed) # going left
+                # miss recovery
                 if self.actions[0] == Tmiss_crouchM:
-                    if self.looking_left == False: self.velocity = -(self.speed/2)    
-                    else: self.velocity = (self.speed/2)
+                    if self.looking_left == False: self.velocity_x = -(self.speed/2)    
+                    else: self.velocity_x = (self.speed/2)
+                #free jumps when
+                if self.actions[0] in [Tattacklong_miss4, Thit1] :
+                    self.freejump = 1
+                    self.can_attack = True
 
+
+            # success hit
+            if self.actions[0] == Thit2:
+                self.velocity_y = -20
+                if self.looking_left == False: self.velocity_x = (self.speed/2) # going right    
+                else: self.velocity_x = -(self.speed/2) # going left
+            
             # if jumping attack
-            if self.actions[0] == Tcrouch_attacklong: 
-                if self.looking_left == False: self.velocity = self.speed # going right    
-                else: self.velocity = -self.speed # going left
+            if self.actions[0] == Tcrouch_attacklong:
+                
+                if self.looking_left == False: self.velocity_x = self.speed # going right    
+                else: self.velocity_x = -self.speed # going left
                 self.collision_rect = pygame.Rect(0,0,25,25)
             
 
@@ -234,11 +242,12 @@ class Player:
             self.can_attack = True # if there is no appended action, tanjie can now attack
             self.collision_rect = pygame.Rect(0,0,25,25)
 
-        # velocity formulas
-        self.x += self.velocity
-        self.y = constant_y + abs(self.velocity)
-        self.velocity *= 0.9
-        
+        # velocity_x formulas
+        self.x += self.velocity_x
+        #self.y += self.velocity_y + constant_y
+        self.y += self.velocity_y
+        self.velocity_x *= 0.9
+        self.velocity_y *= 0.9
 
         # collisions
         self.collision_rect.center = (960, constant_y+100)
@@ -251,7 +260,7 @@ class Player:
             self.actions.append(Tidle)
 
         # image divided by 2, on (x,y), marksk the center point
-        center = ((WIDTH/2 - self.actions[0].get_width()/2) + self.velocity, self.y - self.actions[0].get_height()/2)
+        center = ((WIDTH/2 - 250) + self.velocity_x, self.velocity_y + constant_y - 125)
         if self.looking_left == True: screen.blit(self.actions[0], center) # looking left
         else: screen.blit(pygame.transform.flip(self.actions[0], True, False), center) # looking right
         pygame.draw.circle(screen, RED, (WIDTH/2, constant_y), 5) # debug circle
@@ -325,8 +334,12 @@ def main():
         debug2 = font.render(f'looking left: {(tanjie.looking_left)}', True, GREEN)
         screen.blit(debug2, (10, 100))
         
-        debug3 = font.render(f'tanjie velocity: {round(tanjie.velocity,1)}', True, GREEN)
+        debug3 = font.render(f'tanjie velocity_x: {round(tanjie.velocity_x,1)}', True, GREEN)
         screen.blit(debug3, (10, 130))
+        debug4 = font.render(f'tanjie velocity_y: {round(tanjie.velocity_y,1)}', True, GREEN)
+        screen.blit(debug4, (10, 160))
+        debug5 = font.render(f'tanjie free jump: {round(tanjie.freejump,1)}', True, GREEN)
+        screen.blit(debug5, (10, 190))
         
         
         pygame.display.flip()
