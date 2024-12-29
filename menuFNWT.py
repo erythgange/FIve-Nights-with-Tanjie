@@ -384,6 +384,6 @@ while True :
                     pygame.quit()
                     sys.exit()
 
-
+asdasd
 # start game
 main()
