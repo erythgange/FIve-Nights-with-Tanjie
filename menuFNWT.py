@@ -15,6 +15,7 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLACK = (0, 0 ,0)
+WHITE = (255, 255, 255)
 
 # font 
 font = pygame.font.Font(None, 36)
@@ -343,20 +344,28 @@ def main():
         
 # menu
 while True : 
-    screen.fill(BLACK)
+    # menu background
+    bg_menu = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/BG.png').convert_alpha()
+    screen.blit(bg_menu, (-4022, 22))
 
     # title 
-    title_text = font.render("Five Nights with Tanjie", True, WHITE)
-    title_rect = title_text.get_rect(center=(WIDTH // 2, HEIGHT // 10))
-    screen.blit(title_text, title_rect)
+    title_img = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/FNWT_Logo_Transparent.png').convert_alpha()
+    screen.blit(title_img, (500, -300))
+
+    #   tanji background
+    tanji_img = pygame.image.load('/mnt/c/users/user/Desktop/FIve-Nights-with-Tanjie/Assets/Tidle.png').convert_alpha()
+    screen.blit(tanji_img, (700, 500))
+    #title_text = font.render("Five Nights with Tanjie", True, WHITE)
+    #title_rect = title_text.get_rect(center=(WIDTH // 2, HEIGHT // 10))
+    #screen.blit(title_text, title_rect)
 
     # menu options
-    play_text = font.render("PLAY", True, WHITE)
-    play_rect = play_text.get_rect(center=(WIDTH // 2, HEIGHT // 6))
+    play_text = font.render("< TO PLAY >", True, WHITE)
+    play_rect = play_text.get_rect(center=(WIDTH // 2, HEIGHT // 1.5))
     screen.blit(play_text, play_rect)
 
-    quit_text = font.render("QUIT", True, WHITE)
-    quit_rect = quit_text.get_rect(center=(WIDTH // 2, HEIGHT // 4))
+    quit_text = font.render("Q TO QUIT ", True, WHITE)
+    quit_rect = quit_text.get_rect(center=(WIDTH // 2, HEIGHT // 1.40))
     screen.blit(quit_text, quit_rect)
 
     pygame.display.flip()
@@ -366,13 +375,14 @@ while True :
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
-            if play_rect.collidepoint(mouse_pos):
-                main()
-            if quit_rect.collidepoint(mouse_pos):
-                pygame.quit()
-                sys.exit()
+        if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    main()
+                elif event.key == pygame.K_RIGHT:
+                    main()
+                elif event.key == pygame.K_q:
+                    pygame.quit()
+                    sys.exit()
 
 
 # start game
