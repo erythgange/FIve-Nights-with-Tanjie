@@ -14,6 +14,7 @@ ENEMY_HIT_RADIUS = 50
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+BLACK = (0,0,0)
 
 # displays
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -51,9 +52,19 @@ Thit2_attacklongM = pygame.image.load('FNWT/Assets/Thit2-attacklongM.png').conve
 Thurt = pygame.image.load('FNWT/Assets/Thurt.png').convert_alpha()
 # Tanjie mirror frames
 mirror_frames = [Tattacklong_landM_attacklong, Tidle_crouchM, Tmiss_crouchM, Tcrouch_switch, Thit2_crouchM, Thit2_attacklongM, Tattacklong_crouch, Tattacklong_miss1]
+# Menu
+FNWT_Logo = pygame.image.load('FNWT/Assets/FNWT_Logo_Transparent.png').convert_alpha()
+FNWT_Logo = pygame.transform.scale(FNWT_Logo,(FNWT_Logo.get_width()/2,FNWT_Logo.get_height()/2))
+Menu = pygame.image.load('FNWT/Assets/Menu.png').convert_alpha()
+Menu = pygame.transform.scale(Menu,(Menu.get_width()/1.5,Menu.get_height()/1.5))
+# FG
+FG1 = pygame.image.load('FNWT/Assets/FG1.png').convert_alpha()
+FG2 = pygame.image.load('FNWT/Assets/FG2.png').convert_alpha()
+FG3 = pygame.image.load('FNWT/Assets/FG3.png').convert_alpha()
 # BG
-Light = pygame.image.load('FNWT/Assets/Light.png').convert_alpha()
-BG = pygame.image.load('FNWT/Assets/BG.png').convert()
+LampLight = pygame.image.load('FNWT/Assets/LampLight.png').convert_alpha()
+LampPost = pygame.image.load('FNWT/Assets/LampPost.png').convert_alpha()
+Street = pygame.image.load('FNWT/Assets/BG.png').convert()
 Ridle = pygame.image.load('FNWT/Assets/Ridle.png').convert_alpha()
 
 # BG music
@@ -62,7 +73,7 @@ mixer.music.play(-1)
 
 # constants
 constant_y = 600
-
+game_started = False
 
 
 
@@ -88,7 +99,7 @@ class Enemy:
         center = (finalx, finaly)
         if self.direction == -1: screen.blit(pygame.transform.flip(Ridle, True, False), center)
         else: screen.blit(Ridle, center)        
-        pygame.draw.circle(screen, RED, (finalx + Ridle.get_width()/2, constant_y), 5) # debug circle
+        #pygame.draw.circle(screen, RED, (finalx + Ridle.get_width()/2, constant_y), 5) # debug circle
         
         # collisions
         self.collision_rect.center = (finalx+ 250, constant_y+100)
@@ -98,7 +109,7 @@ class Enemy:
             #print("hit")
         else: color = RED    
         
-        pygame.draw.rect(screen, color, self.collision_rect)
+        #pygame.draw.rect(screen, color, self.collision_rect)
         
 
 
@@ -126,21 +137,13 @@ class Player:
         self.frameduration = self.framepause
         self.collision_rect = pygame.Rect(0,0,100,25)
         self.collision_color = GREEN
-        self.freejump : int = 3
-        self.queued_direction = []
-
+        self.freejump : int = 2
+        self.invulnerable = False
 
     def move(self, direction:str, keydown:bool = True):
-        
-        
         def attacklong():
-                #self.actions.append(Tattacklong_land_attacklong)
-                #self.actions.clear()
-                #self.frameduration = 10
-                
                 self.actions.append(Tcrouch_attacklong)
                 self.actions.append(Tattacklong_crouch)
-                
                 if self.freejump > 0: 
                     self.actions.append(Tcrouch)
                 else:
@@ -177,7 +180,7 @@ class Player:
 
             #from a successful hit,
             if self.actions[0] == Thit2 or self.actions[0] == Thit1:
-                self.freejump = 2
+                self.freejump : int = 1
                 preserve = self.actions[0]
                 self.actions.clear() # clear everything except first
                 self.actions.insert(0, preserve)
@@ -210,11 +213,12 @@ class Player:
                 self.actions.append(Tcrouch_attacklong0)
                 attacklong() # long jumping attack
                 
-        
     def collide(self, target_pos): 
         #self.velocity_x /= 1.1
+        self.freejump = 2
         self.x += self.velocity_x
         if self.actions[0] == (Tcrouch_attacklong): #if jumping
+            self.invulnerable = True
             self.actions.clear()
             self.actions.append(Thit1)
             self.actions.append(Thit2)
@@ -223,7 +227,7 @@ class Player:
             #self.actions.append(Thit2_crouchM)
             self.actions.append(Tattacklong_landM_attacklong)
             self.actions.append(Tcrouch)
-        else:
+        elif self.invulnerable == False:
             self.actions.clear()
             self.actions.append(Thurt)
             self.actions.append(Thurt)
@@ -231,32 +235,24 @@ class Player:
             self.actions.append(Tcrouch)
 
     def draw(self):        
-
         # animation frame rate / edit it with self.framepause
         if len(self.actions) > 1: # if there is an appended action, 
             self.frameduration -= 1 # start countdown.
-
             def applyvelocity(if_looking_left,if_looking_right):
                 if self.looking_left == False: self.velocity_x = if_looking_left # going right    
                 else: self.velocity_x = if_looking_right # going left
-
             if self.frameduration == 0: # if countdown reaches zero,
                 self.actions.pop(0) # proceed to next action and
                 self.frameduration = self.framepause # start countdown again
-                
                 # if tanjie does an action that turns him around
                 if self.actions[0] in mirror_frames: self.looking_left = not self.looking_left
                 self.time_last_move = pygame.time.get_ticks() # timer after this move
-
+                # vulnerable frames
+                if self.actions[0] in [Tcrouch, Tattacklong_miss1]:
+                    self.invulnerable = False
                 # if attack land attack
                 if self.actions[0] in [Tattacklong_land_attacklong, Tattacklong_landM_attacklong]:
                     self.velocity = 0
-                    #if self.looking_left == False: self.velocity_x = -(self.speed) # going right
-                    #else: self.velocity_x = (self.speed) # going left
-
-                # if crouching (vulnerable)
-                #if self.actions[0] == (Tidle_crouch or Tidle_crouchM): self.collision_rect = pygame.Rect(0,0,25,25)
-                
                 # attack recovery
                 if self.actions[0] == Thit2_crouchM: applyvelocity(-(self.speed/2), (self.speed/2))
                 # miss recovery
@@ -267,12 +263,17 @@ class Player:
                     self.can_attack = True
                 #jumping attack(once)
                 if self.actions[0] == Tcrouch_attacklong:
-                    applyvelocity((self.speed), -(self.speed))
-                    self.frameduration *= 3
+                    x = self.speed - self.freejump
+                    applyvelocity(x, -x)
+                    self.frameduration *= 4
+                    self.frameduration -= self.freejump*2
                 #longattack, interrupt, long attack
                 if self.actions[0] == Tattacklong_land_attacklong:
                     applyvelocity((self.speed), -(self.speed))
-
+                if self.actions[0] == Tmiss_crouchM:
+                    self.actions.clear()
+                    self.actions.insert(0, Tmiss_crouchM)
+                    self.actions.append(Tcrouch)
 
             # success hit
             if self.actions[0] == Thit2:
@@ -282,13 +283,6 @@ class Player:
             # just before attack
             if self.actions[0] == Tcrouch_attacklong0:
                 applyvelocity(-self.speed/2, self.speed/2)
-                #self.collision_rect = pygame.Rect(0,0,25,25)
-
-            # jumping attack
-            #if self.actions[0] == Tcrouch_attacklong:
-                #applyvelocity((self.speed), -(self.speed))
-                #self.collision_rect = pygame.Rect(0,0,25,25)
-            
 
         else: 
             self.can_attack = True # if there is no appended action, tanjie can now attack
@@ -303,7 +297,7 @@ class Player:
 
         # collisions
         self.collision_rect.center = (960+(self.velocity_x*4), constant_y+100)
-        pygame.draw.rect(screen, self.collision_color, self.collision_rect)
+        #pygame.draw.rect(screen, self.collision_color, self.collision_rect)
         
         # idle animation
         elapsed_time = ((pygame.time.get_ticks() - self.time_last_move)) # timer start after last move
@@ -319,8 +313,47 @@ class Player:
 
 
 class Environment:
+    def __init__(self, image:pygame.Surface, x, y, parralax:float=1):
+        self.image = image
+        self.x = x
+        self.y = y
+        self.parralax = parralax
+        self.lightcooldown = 0
+
+    def render(self, tanjie_x: float):
+        finalpos_x = ((self.x + tanjie_x) * self.parralax)
+        screen.blit (self.image, (finalpos_x, self.y))
+        
+    def renderpostlight(self, tanjie_x: float):
+        chance = random.randint(1,1000)
+        if chance == 1: self.lightcooldown = 100
+        else: self.lightcooldown -= 1
+        if self.lightcooldown <= 0:
+            finalpos_x = ((self.x + tanjie_x) * self.parralax)
+            screen.blit (LampLight, (finalpos_x, self.y))
+
+
+class Border:
     def __init__(self):
-        pass
+        self.newbordersize = 300
+        self.bordersize = 1900
+        self.border1 = pygame.Rect(0,0,1920,self.bordersize)
+        self.border2 = pygame.Rect(0,1081-self.bordersize,1920,self.bordersize)
+        
+    def render(self, gamerunning: bool):
+        self.bordersize = pygame.math.lerp(self.bordersize, self.newbordersize, .1)
+        self.border1 = pygame.Rect(0,0,1920,self.bordersize)
+        self.border2 = pygame.Rect(0,1081-self.bordersize,1920,self.bordersize)
+        pygame.draw.rect(screen, BLACK, self.border1)
+        pygame.draw.rect(screen, BLACK, self.border2)
+
+        if gamerunning == False:
+            screen.blit(Menu, (1360 - (Menu.get_width()/2), (780 -self.bordersize)))
+            screen.blit(FNWT_Logo, (560 - (FNWT_Logo.get_width()/2), self.bordersize))
+    
+    def changebordersize(self, value):
+        self.newbordersize = value
+
 
 def debugging(clock, tanjie, score):
     score_text = font.render(f'Score: {score}', True, GREEN)
@@ -330,7 +363,7 @@ def debugging(clock, tanjie, score):
     fps_text = font.render(f'FPS: {round(clock.get_fps())}', True, GREEN)
     screen.blit(fps_text, (10, 40))
     
-    debug1 = font.render(f'tanjie_x: {round(tanjie.x,1)}', True, GREEN)
+    debug1 = font.render(f'invulnerable: {(tanjie.invulnerable)}', True, GREEN)
     screen.blit(debug1, (10, 70))
     
     debug2 = font.render(f'looking left: {(tanjie.looking_left)}', True, GREEN)
@@ -347,38 +380,65 @@ def debugging(clock, tanjie, score):
 def main():
     clock = pygame.time.Clock()
     tanjie = Player()
+    border = Border()
     enemies = [] #must be enemy class
     score = 0
     spawn_counter = 0
+    game_started = False
+    BG = []
+    for x in range(10):
+        imagex = random.randint(-10000,10000)
+        imagey = 0
+        image = LampPost
+        parralax = -1
+        BG.append(Environment(image, imagex, imagey, parralax))
+    FG = []
+    for x in range(50):
+        imagex = random.randint(-10000,10000)
+        randomimage = random.choice([FG1, FG2, FG3])
+        if randomimage == FG1: imagey = 0
+        elif randomimage == FG2: imagey = 1080 - 200
+        elif randomimage == FG3: imagey = 1080 - 200
+        parralax = random.randint(-4,-2)
+        FG.append(Environment(randomimage, imagex, imagey, parralax))
+    
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()
+                sys.exit()           
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT: tanjie.move("left")
-                if event.key == pygame.K_RIGHT: tanjie.move("right")
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    sys.exit()
+                elif event.key == pygame.K_LEFT: tanjie.move("left")
+                elif event.key == pygame.K_RIGHT: tanjie.move("right")
+                game_started = True
+
+
 
         # enemies
-        spawn_counter += 1
-        if spawn_counter >= ENEMY_SPAWN_RATE:
-            enemies.append(Enemy(tanjie))
-            spawn_counter = 0
-        for enemy in enemies:
-            enemy.move()
+        if game_started == True:
+            border.changebordersize(0)
+            spawn_counter += 1
+            if spawn_counter >= ENEMY_SPAWN_RATE:
+                enemies.append(Enemy(tanjie))
+                spawn_counter = 0
+            for enemy in enemies:
+                enemy.move()
 
         # drawing
-        def cam_offset(inputpos, parralax=1):
-            inputpos = (inputpos - tanjie.x) * parralax
-            return inputpos
+        screen.fill(WHITE) #debug white screen
+        screen.blit(Street, (0,0)) #draw street
+        screen.blit(Menu, (600 - tanjie.x, 780)) # draw menu
         
-        bglocation = cam_offset(-4000)
-        screen.fill(WHITE)
-        screen.blit(BG, (bglocation, 1))
-        tanjie.draw()
+        for x in BG: x.render(tanjie.x + tanjie.velocity_x) # spawn Background lamp posts
+        tanjie.draw() # draw tanjie
         for enemy in enemies: enemy.draw(tanjie)
-        
+        for x in BG: x.renderpostlight(tanjie.x + tanjie.velocity_x) # spawn lamp light
+        for x in FG: x.render(tanjie.x) # spawn Foreground
+
         # collisions
         for enemy in enemies:
             if tanjie.collision_rect.colliderect(enemy.collision_rect):
@@ -387,16 +447,15 @@ def main():
                 tanjie.collision_color = GREEN
             else: tanjie.collision_color = WHITE
 
-
-
-
-
-
+        
+        
+        border.render(game_started)
+        
         # debugging
         debugging(clock, tanjie, score)
         
         
         pygame.display.flip()
-        
+
 # start game
 main()
