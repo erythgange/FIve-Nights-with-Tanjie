@@ -1,1 +1,1 @@
-1200
+  clock.tick(FPS)

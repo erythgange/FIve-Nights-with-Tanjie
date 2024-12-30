@@ -21,63 +21,79 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Five Nights with Tanjie")
 
 # assets
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font(None, 60)
+clock = pygame.time.Clock()
 # Tanjie idle/crouch
-Tidle = pygame.image.load('FNWT/Assets/Tidle.png').convert_alpha()
-Tcrouch = pygame.image.load('FNWT/Assets/Tcrouch.png').convert_alpha()
-Tidle_crouch = pygame.image.load('FNWT/Assets/Tidle-crouch.png').convert_alpha()
-Tidle_crouchM = pygame.image.load('FNWT/Assets/Tidle-crouchM.png').convert_alpha()
-Tcrouch_idle = pygame.image.load('FNWT/Assets/Tcrouch-idle.png').convert_alpha()
-Tcrouch = pygame.image.load('FNWT/Assets/Tcrouch.png').convert_alpha()
-Tcrouch_switch = pygame.image.load('FNWT/Assets/Tcrouch-switch.png').convert_alpha()
+Tidle = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tidle.png').convert_alpha()
+Tcrouch = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch.png').convert_alpha()
+Tidle_crouch = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tidle-crouch.png').convert_alpha()
+Tidle_crouchM = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tidle-crouchM.png').convert_alpha()
+Tcrouch_idle = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch-idle.png').convert_alpha()
+Tcrouch = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch.png').convert_alpha()
+Tcrouch_switch = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch-switch.png').convert_alpha()
 # Tanjie attack
-Tcrouch_attacklong0 = pygame.image.load('FNWT/Assets/Tcrouch-attacklong0.png').convert_alpha()
-Tcrouch_attacklong = pygame.image.load('FNWT/Assets/Tcrouch-attacklong.png').convert_alpha()
-Tattacklong_land_attacklong = pygame.image.load('FNWT/Assets/Tattacklong-land-attacklong.png').convert_alpha()
-Tattacklong_landM_attacklong = pygame.image.load('FNWT/Assets/Tattacklong-landM-attacklong.png').convert_alpha()
-Tcrouch_attackshort = pygame.image.load('FNWT/Assets/Tcrouch-attackshort.png').convert_alpha()
-Tattacklong_crouch = pygame.image.load('FNWT/Assets/Tattacklong-crouch.png').convert_alpha()
+Tcrouch_attacklong0 = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch-attacklong0.png').convert_alpha()
+Tcrouch_attacklong = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch-attacklong.png').convert_alpha()
+Tattacklong_land_attacklong = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-land-attacklong.png').convert_alpha()
+Tattacklong_landM_attacklong = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-landM-attacklong.png').convert_alpha()
+Tcrouch_attackshort = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tcrouch-attackshort.png').convert_alpha()
+Tattacklong_crouch = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-crouch.png').convert_alpha()
 # Tanjie miss
-Tattacklong_miss1 = pygame.image.load('FNWT/Assets/Tattacklong-miss1.png').convert_alpha()
-Tattacklong_miss2 = pygame.image.load('FNWT/Assets/Tattacklong-miss2.png').convert_alpha()
-Tattacklong_miss3 = pygame.image.load('FNWT/Assets/Tattacklong-miss3.png').convert_alpha()
-Tattacklong_miss4 = pygame.image.load('FNWT/Assets/Tattacklong-miss4.png').convert_alpha()
-Tmiss_crouchM = pygame.image.load('FNWT/Assets/Tmiss-crouchM.png').convert_alpha()
+Tattacklong_miss1 = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-miss1.png').convert_alpha()
+Tattacklong_miss2 = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-miss2.png').convert_alpha()
+Tattacklong_miss3 = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-miss3.png').convert_alpha()
+Tattacklong_miss4 = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tattacklong-miss4.png').convert_alpha()
+Tmiss_crouchM = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Tmiss-crouchM.png').convert_alpha()
 # Tanjie hit/hurt
-Thit1 = pygame.image.load('FNWT/Assets/Thit1.png').convert_alpha()
-Thit2 = pygame.image.load('FNWT/Assets/Thit2.png').convert_alpha()
-Thit2_crouchM = pygame.image.load('FNWT/Assets/Thit2-crouchM.png').convert_alpha()
-Thit2_attacklong = pygame.image.load('FNWT/Assets/Thit2-attacklong.png').convert_alpha()
-Thit2_attacklongM = pygame.image.load('FNWT/Assets/Thit2-attacklongM.png').convert_alpha()
-Thurt = pygame.image.load('FNWT/Assets/Thurt.png').convert_alpha()
+Thit1 = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Thit1.png').convert_alpha()
+Thit2 = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Thit2.png').convert_alpha()
+Thit2_crouchM = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Thit2-crouchM.png').convert_alpha()
+Thit2_attacklong = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Thit2-attacklong.png').convert_alpha()
+Thit2_attacklongM = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Thit2-attacklongM.png').convert_alpha()
+Thurt = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Thurt.png').convert_alpha()
 # Tanjie mirror frames
 mirror_frames = [Tattacklong_landM_attacklong, Tidle_crouchM, Tmiss_crouchM, Tcrouch_switch, Thit2_crouchM, Thit2_attacklongM, Tattacklong_crouch, Tattacklong_miss1]
 # Menu
-FNWT_Logo = pygame.image.load('FNWT/Assets/FNWT_Logo_Transparent.png').convert_alpha()
+FNWT_Logo = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/FNWT_Logo_Transparent.png').convert_alpha()
 FNWT_Logo = pygame.transform.scale(FNWT_Logo,(FNWT_Logo.get_width()/2,FNWT_Logo.get_height()/2))
-Menu = pygame.image.load('FNWT/Assets/Menu.png').convert_alpha()
+Menu = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Menu.png').convert_alpha()
 Menu = pygame.transform.scale(Menu,(Menu.get_width()/1.5,Menu.get_height()/1.5))
 # FG
-FG1 = pygame.image.load('FNWT/Assets/FG1.png').convert_alpha()
-FG2 = pygame.image.load('FNWT/Assets/FG2.png').convert_alpha()
-FG3 = pygame.image.load('FNWT/Assets/FG3.png').convert_alpha()
+FG1 = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/FG1.png').convert_alpha()
+FG2 = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/FG2.png').convert_alpha()
+FG3 = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/FG3.png').convert_alpha()
 # BG
-LampLight = pygame.image.load('FNWT/Assets/LampLight.png').convert_alpha()
-LampPost = pygame.image.load('FNWT/Assets/LampPost.png').convert_alpha()
-Street = pygame.image.load('FNWT/Assets/BG.png').convert()
-Ridle = pygame.image.load('FNWT/Assets/Ridle.png').convert_alpha()
+LampLight = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/LampLight.png').convert_alpha()
+LampPost = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/LampPost.png').convert_alpha()
+Street = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/BG.png').convert()
+Ridle = pygame.image.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/Ridle.png').convert_alpha()
 
 # BG music
-mixer.music.load('FNWT/Assets/BGX.mp3')
+mixer.music.load('/mnt/c/users/user/desktop/FIve-Nights-with-Tanjie/Assets/BGX.mp3')
 mixer.music.play(-1)
 
 # constants
 constant_y = 600
 game_started = False
 
+total_game_seconds = 15 * 60 
+seconds_per_game_hour = 30
+start_time = 0
+end_time = 6
 
 
+# clock frame rate
+clock = pygame.time.Clock()
 
+def time_format(hour, minute):
+    period = "AM" if hour < 12 else "PM"
+    formatted_hour = hour if hour != 0 else 12
+    return f"{formatted_hour:02}:{minute:02}{period}"
+
+def get_time(elapsed_seconds) : 
+    game_hours = int(elapsed_seconds // seconds_per_game_hour)
+    game_minutes = int((elapsed_seconds % seconds_per_game_hour) / (seconds_per_game_hour / 60 ))
+    return (start_time + game_hours, game_minutes)
 
 # class enemy
 class Enemy:
@@ -355,30 +371,25 @@ class Border:
         self.newbordersize = value
 
 
-def debugging(clock, tanjie, score):
-    score_text = font.render(f'Score: {score}', True, GREEN)
-    screen.blit(score_text, (10, 10))
+#def debugging( tanjie, score):
+    #score_text = font.render(f'Score: {score}', True, GREEN)
+    #screen.blit(score_text, (10, 10))
+    #debug1 = font.render(f'invulnerable: {(tanjie.invulnerable)}', True, GREEN)
+    #screen.blit(debug1, (10, 70))
     
-    clock.tick(FPS)
-    fps_text = font.render(f'FPS: {round(clock.get_fps())}', True, GREEN)
-    screen.blit(fps_text, (10, 40))
+    #debug2 = font.render(f'looking left: {(tanjie.looking_left)}', True, GREEN)
+    #screen.blit(debug2, (10, 100))
     
-    debug1 = font.render(f'invulnerable: {(tanjie.invulnerable)}', True, GREEN)
-    screen.blit(debug1, (10, 70))
-    
-    debug2 = font.render(f'looking left: {(tanjie.looking_left)}', True, GREEN)
-    screen.blit(debug2, (10, 100))
-    
-    debug3 = font.render(f'tanjie velocity_x: {round(tanjie.velocity_x,1)}', True, GREEN)
-    screen.blit(debug3, (10, 130))
-    debug4 = font.render(f'tanjie velocity_y: {round(tanjie.velocity_y,1)}', True, GREEN)
-    screen.blit(debug4, (10, 160))
-    debug5 = font.render(f'tanjie free jump: {round(tanjie.freejump,1)}', True, GREEN)
-    screen.blit(debug5, (10, 190))
+    #debug3 = font.render(f'tanjie velocity_x: {round(tanjie.velocity_x,1)}', True, GREEN)
+    #screen.blit(debug3, (10, 130))
+    #debug4 = font.render(f'tanjie velocity_y: {round(tanjie.velocity_y,1)}', True, GREEN)
+    #screen.blit(debug4, (10, 160))
+    #debug5 = font.render(f'tanjie free jump: {round(tanjie.freejump,1)}', True, GREEN)
+    #screen.blit(debug5, (10, 190))
 
 # main
 def main():
-    clock = pygame.time.Clock()
+    ticks = pygame.time.get_ticks()
     tanjie = Player()
     border = Border()
     enemies = [] #must be enemy class
@@ -407,7 +418,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()           
+                sys.exit()
+                       
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     pygame.quit()
@@ -416,8 +428,21 @@ def main():
                 elif event.key == pygame.K_RIGHT: tanjie.move("right")
                 game_started = True
 
+        # calculate elapsed time
+            elapsed_seconds = (pygame.time.get_ticks() - ticks) // 1000
+            if elapsed_seconds >  total_game_seconds:
+                break # stops the game
 
+        # calculate game time
+            game_hour, game_minute, = get_time(elapsed_seconds)
 
+        # format time for display
+            if game_hour >= end_time:
+                break
+                # stops the game
+            time_string = time_format(game_hour,game_minute)
+
+       
         # enemies
         if game_started == True:
             border.changebordersize(0)
@@ -431,6 +456,10 @@ def main():
         # drawing
         screen.fill(WHITE) #debug white screen
         screen.blit(Street, (0,0)) #draw street
+         # render time
+        clock_text = font.render(time_string, True, WHITE)
+        screen.blit(clock_text, (875,10))
+        
         screen.blit(Menu, (600 - tanjie.x, 780)) # draw menu
         
         for x in BG: x.render(tanjie.x + tanjie.velocity_x) # spawn Background lamp posts
@@ -452,10 +481,12 @@ def main():
         border.render(game_started)
         
         # debugging
-        debugging(clock, tanjie, score)
+        #debugging(tanjie, score)
         
         
         pygame.display.flip()
+        clock.tick(FPS)
+        
 
 # start game
 main()
